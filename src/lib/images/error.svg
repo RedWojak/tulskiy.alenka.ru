@@ -1,0 +1,17 @@
+<svg
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+
+<circle stroke="red"
+    cx="11.4846"
+    cy="11.2679"
+    r="9.62406"
+    transform="rotate(90 11.4846 11.2679)"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path d="M11.4854 9.91455L11.4865 15.5042" stroke-width="2" stroke-linecap="round" stroke="red" stroke-linejoin="round" />
+  <path d="M11.4846 6.6853L11.4846 6.38155" stroke-width="2" stroke-linecap="round" stroke="red" stroke-linejoin="round" />
+  </svg>

@@ -5,7 +5,7 @@
 <style>
   .wrapper {
     padding: 0 60px;
-    margin: 10px 0 20px 0;
+    margin: 10px 0 var(--spacing-large) 0;
   }
 </style>
 

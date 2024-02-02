@@ -7,7 +7,9 @@ import { getQuizData } from "$lib/api";
 
 export const load: LayoutServerLoad = async () => {
   try {
-    return getQuizData(`${PUBLIC_BASE_URL}${API_QUIZ}`);
+    const data = await getQuizData(`${PUBLIC_BASE_URL}${API_QUIZ}`);
+    if (data !== undefined) return data;
+    else error(500, "Cannot load quiz data");
   } catch (e) {
     error(500, "Cannot load quiz data");
   }

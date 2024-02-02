@@ -82,3 +82,12 @@ export interface LoginResponse {
   message: string;
   serverTime: string;
 }
+
+export type QuizModel = {
+  question: string;
+  answers: string[];
+  tillEnd: number;
+  duration: number;
+  useAlternativeTheme: boolean;
+  points: number;
+}[];

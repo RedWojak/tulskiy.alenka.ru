@@ -65,7 +65,7 @@ export interface Leader {
 
 export interface LeaderboardResponse {
   leaders: Leader[];
-  winningPosition: number;
+  place: number;
 }
 export interface InitResponse {
   serverTime: number;

@@ -1,8 +1,11 @@
 import type { Question } from "$lib/types";
 
-export const calcScore = (results: { answer: number; time: number }[], quiz: Question[]) => {
+export const calcScore = (
+  results: { answer: number; time: number }[],
+  correctAnswers: number[]
+) => {
   const score = results.reduce((acc, { answer }, idx) => {
-    if (quiz[idx].correct === answer) {
+    if (correctAnswers[idx] === answer) {
       return acc + 1;
     } else {
       return acc;

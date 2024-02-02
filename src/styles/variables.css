@@ -1,0 +1,27 @@
+:root {
+  font-size: 14px;
+
+  --color-primary:  #611F1D;
+  --color-secondary: #F3D2A8;
+  --color-light: #FFF;
+  --color-dark: #1A202C;
+  --color-yellow: #FEB300;
+  --color-blue: #2A46A9;
+  --color-red: #FF0003;
+  --color-red-light: #FF7C7F;
+  --color-green: #239700;
+  --color-green-light: #67C04C;
+
+  --kub-bg: url("$lib/images/bg.png");
+  --check-icon-url: url("$lib/images/checkIcon.svg");
+
+
+  --rounded-sm: 4px;
+  --rounded: 8px;
+  --rounded-lg: 10px;
+  --rounded-xl: 72px;
+
+  --spacing-medium: 14px;
+  --spacing-medium-large: 16px;
+}
+

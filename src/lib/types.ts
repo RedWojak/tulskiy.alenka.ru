@@ -36,13 +36,25 @@ export const Stages = {
 
 export type Stage = (typeof Stages)[keyof typeof Stages];
 
-export interface Question {
+export type QuizResponse = {
   question: string;
   answers: string[];
   background: string;
   time: number;
   correct: number;
   points: number;
+  useAlternativeTheme: boolean;
+}[];
+export interface QuizData {
+  quizDuration: number;
+  questions: Question[];
+  correctAnswers?: number[];
+}
+
+export interface Question {
+  question: string;
+  answers: string[];
+  time: number;
   useAlternativeTheme: boolean;
 }
 
@@ -55,7 +67,11 @@ export interface LeaderboardResponse {
   leaders: Leader[];
   winningPosition: number;
 }
-
+export interface InitResponse {
+  serverTime: number;
+  startTime: number;
+  lastResetTime: number | null;
+}
 export interface InitData {
   serverTime: number;
   startTime: number;

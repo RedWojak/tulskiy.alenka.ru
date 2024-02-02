@@ -2,7 +2,16 @@ import { error, type NumericRange } from "@sveltejs/kit";
 
 import { ANSWERS_RETRIES } from "./constants";
 
-import type { AnswersRequest, InitData, LoginRequest, LoginResponse } from "./types";
+import type {
+  AnswersRequest,
+  InitData,
+  InitResponse,
+  LoginRequest,
+  LoginResponse,
+  Question,
+  QuizData,
+  QuizResponse
+} from "./types";
 import { PUBLIC_ANSWERS, PUBLIC_BASE_URL, PUBLIC_INIT, PUBLIC_LOGIN } from "$env/static/public";
 
 async function send({
@@ -58,13 +67,43 @@ export const getInitData = async (): Promise<InitData | undefined> => {
     const { lastResetTime, startTime, serverTime } = (await send({
       method: "GET",
       url: `${PUBLIC_BASE_URL}${PUBLIC_INIT}`
-    })) as InitData;
+    })) as InitResponse;
     let requestEndTime: number = Date.now();
     const requestEvgTime = Math.round((requestEndTime - requestStartTime) / 2);
     return {
       lastResetTime: Number(lastResetTime),
       startTime: Number(startTime),
-      serverTime: Number(serverTime)
+      serverTime: Number(serverTime) + requestEvgTime
+    };
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getQuizData = async (url: string): Promise<QuizData | undefined> => {
+  try {
+    let quizDuration: number = 0;
+    const questions: Question[] = [];
+    let correctAnswers: number[] | undefined = undefined;
+    const quizData = (await send({
+      method: "GET",
+      url
+    })) as QuizResponse;
+    for (let i = 0; i < quizData.length; i += 1) {
+      const { time, question, answers, useAlternativeTheme } = quizData[i];
+      quizDuration += time;
+      questions.push({ time, question, answers, useAlternativeTheme });
+    }
+
+    const initData = await getInitData();
+    if (initData && initData.serverTime > initData.startTime + quizDuration) {
+      correctAnswers = quizData.map(({ correct }) => correct);
+    }
+
+    return {
+      quizDuration,
+      questions,
+      correctAnswers
     };
   } catch (e) {
     console.error(e);

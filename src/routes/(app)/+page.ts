@@ -12,8 +12,11 @@ export const load: PageLoad<InitData | undefined> = async ({ depends }) => {
 
   try {
     pageData = await getInitData();
+    if (pageData) return pageData;
+    else {
+      error(500, "Cannot load quiz data");
+    }
   } catch (e) {
     error(500, "Cannot load quiz data");
   }
-  return pageData;
 };

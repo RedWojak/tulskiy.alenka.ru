@@ -1,5 +1,5 @@
 :root {
-  font-size: 14px;
+
 
   --color-primary:  #611F1D;
   --color-secondary: #F3D2A8;
@@ -21,7 +21,16 @@
   --rounded-lg: 10px;
   --rounded-xl: 72px;
 
+  --spacing-medium-small: 12px;
   --spacing-medium: 14px;
   --spacing-medium-large: 16px;
+
+  --font-size-m: 14px;
+	--font-size-lg: 18px;
+	--font-size-xl: 24px;
+	--font-size-xxl: 32px;
+  --font-size-xxxl: 60px;
+
+  font-size: var(--font-size-m);
 }
 

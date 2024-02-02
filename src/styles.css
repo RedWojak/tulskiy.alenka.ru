@@ -19,23 +19,24 @@ body {
 
 .h1 {
   text-align: center;
-  font-size: 32px;
+  font-size: var(--font-size-xxl);
   line-height: 36px;
 }
 
 .h2 {
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-medium-small);
   text-align: center;
-  font-size: 24px;
+  font-size: var(--font-size-xl);
 }
 
 .h3 {
-  margin-top: 12px;
+  margin-top: var(--spacing-medium-small);
   text-align: center;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
 }
 
 .text-input {
+  width: 100%;
   padding: var(--spacing-medium) var(--spacing-medium-large);
   border-radius: var(--rounded);
   border: 1px solid var(--color-dark);

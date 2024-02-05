@@ -7,8 +7,12 @@
   export let hideMinutes = false;
 
   let intervalId: number | undefined;
+  let remained: number;
+  let endTime: number;
 
   function startTimer() {
+    endTime = Math.floor((Date.now() + countdownSeconds) / 1000);
+    remained = endTime - Math.floor(Date.now() / 1000);
     intervalId = setInterval(() => {
       countdownSeconds -= 1;
       if (countdownSeconds < 0) {
@@ -30,6 +34,7 @@
   onDestroy(() => {
     if (intervalId !== undefined) clearInterval(intervalId);
   });
+  $: console.log(countdownSeconds);
 
   $: minutes = String(Math.floor(countdownSeconds / 60)).padStart(2, "0");
   $: seconds = String(countdownSeconds % 60).padStart(2, "0");
@@ -80,7 +85,7 @@
 </style>
 
 <div class="wrapper">
-  {#if countdownSeconds >= 0}
+  {#if remained >= 0}
     <div class="timer">
       <svg
         width="91"

@@ -19,7 +19,7 @@
   }
   let intervalId: number = setInterval(checkInitData, KUB_CHECK_STATE_INTERVAL);
   $: hasFinished =
-    data && data.startTimeISO && data.serverTime + LEADERS_DATA_LOAD_DELAY > data.startTime;
+    data && data.startTimeISO && data.serverTime + LEADERS_DATA_LOAD_DELAY > data.quizLaunchTime;
 
   onDestroy(() => clearInterval(intervalId));
 </script>

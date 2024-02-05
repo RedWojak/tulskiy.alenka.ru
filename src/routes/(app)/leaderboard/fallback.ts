@@ -21,5 +21,5 @@ export const FALLBACK_LEADERS = {
       phone: "0067"
     }
   ],
-  place: 1
+  place: -1
 };

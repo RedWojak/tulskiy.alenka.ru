@@ -34,7 +34,6 @@ async function send({
   }
 
   const response = await fetch(url, opts);
-
   if (response.ok) {
     const data = await response.json();
     return data ?? {};
@@ -68,7 +67,7 @@ export const sendAnswers = async (data: AnswersRequest) => {
 export const getInitData = async (): Promise<InitData | undefined> => {
   try {
     const requestStartTime = Date.now();
-    const { lastResetTime, startTime, serverTime, startTimeISO } = (await send({
+    const { lastResetTime, quizLaunchTime, serverTime, startTimeISO } = (await send({
       method: "GET",
       url: `${PUBLIC_BASE_URL}${PUBLIC_INIT}`
     })) as InitResponse;
@@ -76,7 +75,7 @@ export const getInitData = async (): Promise<InitData | undefined> => {
     const requestEvgTime = Math.round((requestEndTime - requestStartTime) / 2);
     return {
       lastResetTime: Number(lastResetTime),
-      startTime: Number(startTime),
+      quizLaunchTime: Number(quizLaunchTime),
       serverTime: Number(serverTime) + requestEvgTime,
       startTimeISO
     };
@@ -101,7 +100,7 @@ export const getQuizData = async (url: string): Promise<QuizData | undefined> =>
     }
 
     const initData = await getInitData();
-    if (initData && initData.serverTime > initData.startTime + quizDuration) {
+    if (initData && initData.serverTime > initData.quizLaunchTime + quizDuration) {
       correctAnswers = quizData.map(({ correct }) => correct);
     }
 

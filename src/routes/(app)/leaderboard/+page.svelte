@@ -30,7 +30,8 @@
 
   const DATA_OLD_AFTER = 60000;
 
-  let msTillStart = data.startTimeISO.length > 0 ? data.startTime - data.serverTime : undefined;
+  let msTillStart =
+    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   const maxRetries =
     msTillStart && msTillStart + data.quizDuration + LEADERS_DATA_LOAD_DELAY + DATA_OLD_AFTER > 0
       ? LEADERS_OLD_DATA_RELOAD_COUNT
@@ -48,23 +49,26 @@
     const url = new URL(`${PUBLIC_BASE_URL}${PUBLIC_LEADERS}`);
 
     url.searchParams.set("id", phone);
-    let leadersData = FALLBACK_LEADERS;
     for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
       try {
         const response = await fetch(url.href);
 
         if (response.ok) {
-          leadersData = (await response.json()) as LeaderboardResponse;
+          const data = (await response.json()) as LeaderboardResponse;
+          if (data.leaders && data.place) {
+            leaders = data.leaders;
+            position = data.place;
+          } else {
+            leaders = FALLBACK_LEADERS.leaders;
+            position = FALLBACK_LEADERS.place;
+          }
+
           break;
-        } else {
-          await sleep(LEADERS_DATA_RELOAD_INTERVAL);
-        }
+        } else await sleep(LEADERS_DATA_RELOAD_INTERVAL);
       } catch (error) {
         console.error(`Error fetching data (attempt ${attempt}):`, error);
       }
     }
-    leaders = leadersData.leaders;
-    position = leadersData.place;
   }
 
   if (user && data?.lastResetTime && user.lastResetTime !== data.lastResetTime) {
@@ -168,9 +172,9 @@
     {:else}
       <div>
         {#if isLeader}
-          <!-- Надо ли подсвечивать 2 и 3 места? -->
           <h1 class="h1">
-            Поздравляем!<br />вы заняли <span class="leader-position">{position} место</span>
+            Поздравляем!<br />вы заняли
+            <span class:leader-position={position === 1}>{position} место</span>
           </h1>
           <p class="info">
             Вам позвонят организаторы конкурса и пригласят вас для получения подарка!

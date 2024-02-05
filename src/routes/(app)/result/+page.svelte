@@ -12,7 +12,8 @@
   let result = getStoredResult();
   let quizStage: Stage = Stages.Pending;
 
-  let msTillStart = data.startTimeISO.length > 0 ? data.startTime - data.serverTime : undefined;
+  let msTillStart =
+    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   $: outcome = data.correctAnswers ? buildOutcome() : [];
   function buildOutcome() {
     return data.questions.map(({ question, answers }, i) => {

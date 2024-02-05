@@ -17,7 +17,8 @@
   const storedResult = getStoredResult();
   const userData = getStoredUser();
   let lastResetTime = data.lastResetTime ?? null;
-  let msTillStart = data.startTimeISO.length > 0 ? data.startTime - data.serverTime : undefined;
+  let msTillStart =
+    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   let questionStartTime = Date.now();
   let quiz: QuizModel = [];
   let quizStage: Stage = Stages.Pending;
@@ -68,6 +69,7 @@
   async function waitAndSendAnswers() {
     try {
       const randomTimeout = Math.floor(Math.random() * 4) * 1000;
+      console.log({ phone: userData!.phone, results: result.answers });
       await sleep(randomTimeout);
       await sendAnswers({ phone: userData!.phone, results: result.answers });
     } catch (e) {

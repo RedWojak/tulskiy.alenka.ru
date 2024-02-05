@@ -69,13 +69,13 @@ export interface LeaderboardResponse {
 }
 export interface InitResponse {
   serverTime: number;
-  startTime: number;
+  quizLaunchTime: number;
   lastResetTime: number | null;
   startTimeISO: string;
 }
 export interface InitData {
   serverTime: number;
-  startTime: number;
+  quizLaunchTime: number;
   lastResetTime: number | null;
   startTimeISO: string;
 }

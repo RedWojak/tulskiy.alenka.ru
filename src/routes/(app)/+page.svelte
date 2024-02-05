@@ -31,14 +31,14 @@
   let quizStage: Stage = Stages.Pending;
   let restartTimer: (a: number) => void;
   let serverTime = data.serverTime;
-  let startTime = data.startTime;
+  let quizLaunchTime = data.quizLaunchTime;
   let lastResetTime = data.lastResetTime;
   let startTimeISO = data.startTimeISO;
   $: if (data) {
     updateInitData(data);
     updateUser(data);
   }
-  $: msTillStart = startTimeISO ? startTime - serverTime : undefined;
+  $: msTillStart = startTimeISO ? quizLaunchTime - serverTime : undefined;
   $: user = $userStore;
   $: countdownSeconds = msTillStart ? Math.floor(msTillStart / 1000) : undefined;
   $: if (startTimeISO.length === 0) quizStage = Stages.Standby;
@@ -55,15 +55,15 @@
     if (data) {
       lastResetTime = data.lastResetTime;
       serverTime = data.serverTime;
-      startTime = data.startTime;
+      quizLaunchTime = data.quizLaunchTime;
       startTimeISO = data?.startTimeISO;
 
       if (
-        startTime &&
+        quizLaunchTime &&
         serverTime &&
-        (data.startTime !== startTime || lastResetTime !== data.lastResetTime)
+        (data.quizLaunchTime !== quizLaunchTime || lastResetTime !== data.lastResetTime)
       ) {
-        restartTimer && restartTimer(Math.floor(startTime - serverTime / 1000));
+        restartTimer && restartTimer(Math.floor(quizLaunchTime - serverTime / 1000));
       }
     }
   }

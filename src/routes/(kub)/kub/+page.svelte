@@ -18,7 +18,8 @@
     await invalidate(INIT_DEPENDENCY);
   }
   let intervalId: number = setInterval(checkInitData, KUB_CHECK_STATE_INTERVAL);
-  $: hasFinished = data && data.serverTime + LEADERS_DATA_LOAD_DELAY > data.startTime;
+  $: hasFinished =
+    data && data.startTimeISO && data.serverTime + LEADERS_DATA_LOAD_DELAY > data.startTime;
 
   onDestroy(() => clearInterval(intervalId));
 </script>
@@ -65,6 +66,7 @@
   .congrats-text {
     color: var(--color-dark);
     font-size: var(--font-size-xxxl);
+    line-height: 1.5;
   }
 </style>
 

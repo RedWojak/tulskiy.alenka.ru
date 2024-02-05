@@ -30,14 +30,19 @@
   let intervalId: number;
   let quizStage: Stage = Stages.Pending;
   let restartTimer: (a: number) => void;
-  let serverTime = data?.serverTime;
-  let startTime = data?.startTime;
-  let lastResetTime = data?.lastResetTime;
-
-  $: msTillStart = startTime && serverTime ? startTime - serverTime : undefined;
+  let serverTime = data.serverTime;
+  let startTime = data.startTime;
+  let lastResetTime = data.lastResetTime;
+  let startTimeISO = data.startTimeISO;
+  $: if (data) {
+    updateInitData(data);
+    updateUser(data);
+  }
+  $: msTillStart = startTimeISO ? startTime - serverTime : undefined;
   $: user = $userStore;
   $: countdownSeconds = msTillStart ? Math.floor(msTillStart / 1000) : undefined;
-  $: if (msTillStart && data.quizDuration !== undefined)
+  $: if (startTimeISO.length === 0) quizStage = Stages.Standby;
+  $: if (msTillStart && startTimeISO.length > 0)
     quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Running && user) goto(QUIZ_PAGE);
   $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE);
@@ -51,6 +56,7 @@
       lastResetTime = data.lastResetTime;
       serverTime = data.serverTime;
       startTime = data.startTime;
+      startTimeISO = data?.startTimeISO;
 
       if (
         startTime &&
@@ -64,13 +70,21 @@
   function updateUser(data?: PageData) {
     if (!user) {
       const storedUser = getStoredUser();
-      if (storedUser && data?.lastResetTime && storedUser.lastResetTime !== data.lastResetTime) {
+      if (!storedUser) return;
+
+      if (
+        (data && data.startTimeISO.length === 0) ||
+        (data?.lastResetTime && storedUser.lastResetTime !== data.lastResetTime)
+      ) {
         removeUser();
       } else {
         userStore.set(storedUser);
       }
     } else {
-      if (user && data?.lastResetTime && user.lastResetTime !== data.lastResetTime) {
+      if (
+        (data?.lastResetTime && user.lastResetTime !== data.lastResetTime) ||
+        (data && data.startTimeISO.length === 0)
+      ) {
         removeUser();
         userStore.set(undefined);
       }
@@ -82,11 +96,7 @@
       clearInterval(intervalId);
       return;
     }
-    await invalidate(INIT_DEPENDENCY);
-    if (data) {
-      updateUser(data);
-      updateInitData(data);
-    }
+    invalidate(INIT_DEPENDENCY);
   }
   function startChecking() {
     intervalId = setInterval(checkInitData, INIT_DATA_RELOAD_INTERVAL);

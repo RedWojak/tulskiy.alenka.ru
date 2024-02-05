@@ -30,15 +30,16 @@
 
   const DATA_OLD_AFTER = 60000;
 
-  const msTillStart = data.startTime - data.serverTime;
+  let msTillStart = data.startTimeISO.length > 0 ? data.startTime - data.serverTime : undefined;
   const maxRetries =
-    msTillStart + data.quizDuration + LEADERS_DATA_LOAD_DELAY + DATA_OLD_AFTER > 0
+    msTillStart && msTillStart + data.quizDuration + LEADERS_DATA_LOAD_DELAY + DATA_OLD_AFTER > 0
       ? LEADERS_OLD_DATA_RELOAD_COUNT
       : LEADERS_CURRENT_DATA_RELOAD_COUNT;
   let quizStage: Stage = Stages.Pending;
   let leaders: Leader[] | undefined = undefined;
   let position: number | undefined = undefined;
 
+  $: if (data.startTimeISO.length === 0) quizStage = Stages.Standby;
   $: if (msTillStart) quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Standby) goto(HOME_PAGE);
   $: if (quizStage === Stages.Running) goto(QUIZ_PAGE);
@@ -79,7 +80,6 @@
     result && data.correctAnswers ? calcScore(result.answers, data.correctAnswers) : undefined;
   $: isLeader =
     position !== undefined && leaders !== undefined && position >= 0 && position <= leaders.length;
-  $: console.log(leaders);
   $: if (quizStage === Stages.Finished) getLeaderboard(maxRetries, user?.phone);
 </script>
 

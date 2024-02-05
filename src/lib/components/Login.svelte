@@ -7,6 +7,8 @@
   import InputTel from "./InputTel.svelte";
   import rulesSrc from "$lib/rules.pdf";
   import type { HttpError } from "@sveltejs/kit";
+  import { invalidate } from "$app/navigation";
+  import { INIT_DEPENDENCY } from "$lib/constants";
 
   export let lastResetTime: number | null = null;
 
@@ -23,21 +25,19 @@
   async function handleSubmit() {
     disabled = true;
     const data = { name: userName, phone: userPhone };
-    try {
-      await login(data);
 
+    const response = await login(data);
+    if (!response?.conflict) {
       const user = { name: userName, phone: userPhone, lastResetTime };
       saveUser(user);
       userStore.set(user);
-    } catch (e) {
-      const error = e as HttpError;
-      if (error.status === 409) {
-        phoneError = "Номер уже зарегистрирован";
-        phoneInvalid = true;
-        disabled = false;
-      }
+      invalidate(INIT_DEPENDENCY);
+    } else {
+      phoneError = "Номер уже зарегистрирован";
+      phoneInvalid = true;
       disabled = false;
     }
+    disabled = false;
   }
 </script>
 
@@ -62,6 +62,9 @@
   }
   .rules-link {
     color: inherit;
+  }
+  .rules-text {
+    cursor: pointer;
   }
 </style>
 

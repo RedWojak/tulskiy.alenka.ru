@@ -1,4 +1,4 @@
-import { error, type NumericRange } from "@sveltejs/kit";
+import { error, type HttpError, type NumericRange } from "@sveltejs/kit";
 
 import { ANSWERS_RETRIES } from "./constants";
 
@@ -40,14 +40,18 @@ async function send({
     return data ?? {};
   }
 
-  throw error(response.status as NumericRange<400, 599>);
+  error(response.status as NumericRange<400, 599>);
 }
 
 export const login = async (data: LoginRequest): Promise<LoginResponse | undefined> => {
   try {
     return await send({ method: "POST", url: `${PUBLIC_BASE_URL}${PUBLIC_LOGIN}`, data });
   } catch (e) {
-    console.log(e);
+    const error = e as HttpError;
+    if (error.status === 409) {
+      return { conflict: true };
+    }
+    console.error(e);
   }
 };
 
@@ -64,7 +68,7 @@ export const sendAnswers = async (data: AnswersRequest) => {
 export const getInitData = async (): Promise<InitData | undefined> => {
   try {
     const requestStartTime = Date.now();
-    const { lastResetTime, startTime, serverTime } = (await send({
+    const { lastResetTime, startTime, serverTime, startTimeISO } = (await send({
       method: "GET",
       url: `${PUBLIC_BASE_URL}${PUBLIC_INIT}`
     })) as InitResponse;
@@ -73,7 +77,8 @@ export const getInitData = async (): Promise<InitData | undefined> => {
     return {
       lastResetTime: Number(lastResetTime),
       startTime: Number(startTime),
-      serverTime: Number(serverTime) + requestEvgTime
+      serverTime: Number(serverTime) + requestEvgTime,
+      startTimeISO
     };
   } catch (e) {
     console.error(e);

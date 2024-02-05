@@ -92,5 +92,4 @@ export type QuizModel = {
   tillEnd: number;
   duration: number;
   useAlternativeTheme: boolean;
-  points: number;
 }[];

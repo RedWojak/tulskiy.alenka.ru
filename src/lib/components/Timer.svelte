@@ -11,11 +11,12 @@
   let endTime: number;
 
   function startTimer() {
-    endTime = Math.floor((Date.now() + countdownSeconds) / 1000);
+    endTime = Math.floor(Date.now() / 1000) + countdownSeconds;
+
     remained = endTime - Math.floor(Date.now() / 1000);
     intervalId = setInterval(() => {
-      countdownSeconds -= 1;
-      if (countdownSeconds < 0) {
+      remained = endTime - Math.floor(Date.now() / 1000);
+      if (remained < 0) {
         clearInterval(intervalId);
         intervalId = undefined;
         callback();
@@ -34,10 +35,9 @@
   onDestroy(() => {
     if (intervalId !== undefined) clearInterval(intervalId);
   });
-  $: console.log(countdownSeconds);
 
-  $: minutes = String(Math.floor(countdownSeconds / 60)).padStart(2, "0");
-  $: seconds = String(countdownSeconds % 60).padStart(2, "0");
+  $: minutes = String(Math.floor(remained / 60)).padStart(2, "0");
+  $: seconds = String(remained % 60).padStart(2, "0");
 </script>
 
 <style>

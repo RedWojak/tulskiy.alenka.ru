@@ -69,7 +69,6 @@
   async function waitAndSendAnswers() {
     try {
       const randomTimeout = Math.floor(Math.random() * 4) * 1000;
-      console.log({ phone: userData!.phone, results: result.answers });
       await sleep(randomTimeout);
       await sendAnswers({ phone: userData!.phone, results: result.answers });
     } catch (e) {

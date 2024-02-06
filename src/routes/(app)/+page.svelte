@@ -33,16 +33,15 @@
   let serverTime = data.serverTime;
   let quizLaunchTime = data.quizLaunchTime;
   let lastResetTime = data.lastResetTime;
-  let startTimeISO = data.startTimeISO;
   $: if (data) {
     updateInitData(data);
     updateUser(data);
   }
-  $: msTillStart = startTimeISO ? quizLaunchTime - serverTime : undefined;
+  $: msTillStart = quizLaunchTime > 0 ? quizLaunchTime - serverTime : undefined;
   $: user = $userStore;
   $: countdownSeconds = msTillStart ? Math.floor(msTillStart / 1000) : undefined;
-  $: if (startTimeISO.length === 0) quizStage = Stages.Standby;
-  $: if (msTillStart && startTimeISO.length > 0)
+  $: if (quizLaunchTime < 0) quizStage = Stages.Standby;
+  $: if (msTillStart && quizLaunchTime > 0)
     quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Running && user) goto(QUIZ_PAGE);
   $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE);
@@ -50,13 +49,11 @@
     const result = getStoredResult();
     if (lastResetTime !== result?.lastResetTime) removeResult();
   }
-
   function updateInitData(data?: PageData) {
     if (data) {
       lastResetTime = data.lastResetTime;
       serverTime = data.serverTime;
       quizLaunchTime = data.quizLaunchTime;
-      startTimeISO = data?.startTimeISO;
 
       if (
         quizLaunchTime &&
@@ -73,7 +70,7 @@
       if (!storedUser) return;
 
       if (
-        (data && data.startTimeISO.length === 0) ||
+        (data && quizLaunchTime < 0) ||
         (data?.lastResetTime && storedUser.lastResetTime !== data.lastResetTime)
       ) {
         removeUser();
@@ -83,7 +80,7 @@
     } else {
       if (
         (data?.lastResetTime && user.lastResetTime !== data.lastResetTime) ||
-        (data && data.startTimeISO.length === 0)
+        (data && quizLaunchTime < 0)
       ) {
         removeUser();
         userStore.set(undefined);

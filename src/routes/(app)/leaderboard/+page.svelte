@@ -30,8 +30,7 @@
 
   const DATA_OLD_AFTER = 60000;
 
-  let msTillStart =
-    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
+  let msTillStart = data.quizLaunchTime > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   const maxRetries =
     msTillStart && msTillStart + data.quizDuration + LEADERS_DATA_LOAD_DELAY + DATA_OLD_AFTER > 0
       ? LEADERS_OLD_DATA_RELOAD_COUNT
@@ -40,7 +39,7 @@
   let leaders: Leader[] | undefined = undefined;
   let position: number | undefined = undefined;
 
-  $: if (data.startTimeISO.length === 0) quizStage = Stages.Standby;
+  $: if (data.quizLaunchTime < 0) quizStage = Stages.Standby;
   $: if (msTillStart) quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Standby) goto(HOME_PAGE);
   $: if (quizStage === Stages.Running) goto(QUIZ_PAGE);

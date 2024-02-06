@@ -17,8 +17,7 @@
   const storedResult = getStoredResult();
   const userData = getStoredUser();
   let lastResetTime = data.lastResetTime ?? null;
-  let msTillStart =
-    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
+  let msTillStart = data.quizLaunchTime > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   let questionStartTime = Date.now();
   let quiz: QuizModel = [];
   let quizStage: Stage = Stages.Pending;
@@ -75,7 +74,7 @@
       console.error(e);
     }
   }
-  $: if (data.startTimeISO.length === 0) quizStage = Stages.Standby;
+  $: if (data.quizLaunchTime < 0) quizStage = Stages.Standby;
   $: if (msTillStart) quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE, { invalidateAll: true });
   $: if (quizStage === Stages.Standby) goto(HOME_PAGE);

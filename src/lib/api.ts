@@ -67,7 +67,7 @@ export const sendAnswers = async (data: AnswersRequest) => {
 export const getInitData = async (): Promise<InitData | undefined> => {
   try {
     const requestStartTime = Date.now();
-    const { lastResetTime, quizLaunchTime, serverTime, startTimeISO } = (await send({
+    const { lastResetTime, quizLaunchTime, serverTime } = (await send({
       method: "GET",
       url: `${PUBLIC_BASE_URL}${PUBLIC_INIT}`
     })) as InitResponse;
@@ -76,8 +76,7 @@ export const getInitData = async (): Promise<InitData | undefined> => {
     return {
       lastResetTime: Number(lastResetTime),
       quizLaunchTime: Number(quizLaunchTime),
-      serverTime: Number(serverTime) + requestEvgTime,
-      startTimeISO
+      serverTime: Number(serverTime) + requestEvgTime
     };
   } catch (e) {
     console.error(e);

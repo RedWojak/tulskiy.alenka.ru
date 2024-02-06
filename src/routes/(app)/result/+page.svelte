@@ -12,8 +12,7 @@
   let result = getStoredResult();
   let quizStage: Stage = Stages.Pending;
 
-  let msTillStart =
-    data.startTimeISO.length > 0 ? data.quizLaunchTime - data.serverTime : undefined;
+  let msTillStart = data.quizLaunchTime > 0 ? data.quizLaunchTime - data.serverTime : undefined;
   $: outcome = data.correctAnswers ? buildOutcome() : [];
   function buildOutcome() {
     return data.questions.map(({ question, answers }, i) => {
@@ -25,7 +24,7 @@
     });
   }
 
-  $: if (data.startTimeISO.length === 0) quizStage = Stages.Standby;
+  $: if (data.quizLaunchTime < 0) quizStage = Stages.Standby;
   $: if (msTillStart) quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Standby) goto(HOME_PAGE);
   $: if (quizStage === Stages.Running) goto(QUIZ_PAGE);

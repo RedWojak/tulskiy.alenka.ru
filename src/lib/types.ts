@@ -71,13 +71,11 @@ export interface InitResponse {
   serverTime: number;
   quizLaunchTime: number;
   lastResetTime: number | null;
-  startTimeISO: string;
 }
 export interface InitData {
   serverTime: number;
   quizLaunchTime: number;
   lastResetTime: number | null;
-  startTimeISO: string;
 }
 
 export interface LoginResponse {

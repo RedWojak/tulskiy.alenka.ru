@@ -2,6 +2,9 @@
   import "../../styles.css";
   import Header from "$lib/components/Header.svelte";
   import { theme } from "$lib/stores";
+  import { page } from "$app/stores";
+  import { RESULT_PAGE } from "$lib/constants/pages";
+  $: showBackBtn = $page.url.pathname === RESULT_PAGE;
 </script>
 
 <style>
@@ -23,7 +26,7 @@
 </style>
 
 <div class="app {$theme}">
-  <Header />
+  <Header {showBackBtn} />
   <main>
     <slot />
   </main>

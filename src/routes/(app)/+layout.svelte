@@ -13,6 +13,7 @@
     margin: auto;
     min-width: 360px;
     max-width: 780px;
+    overflow-y: hidden;
   }
   .main-theme {
     background-color: var(--color-primary);

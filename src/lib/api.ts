@@ -99,7 +99,7 @@ export const getQuizData = async (url: string): Promise<QuizData | undefined> =>
     }
 
     const initData = await getInitData();
-    if (initData && initData.serverTime > initData.quizLaunchTime + quizDuration) {
+    if (initData && initData.quizLaunchTime > 0 && initData.serverTime > initData.quizLaunchTime) {
       correctAnswers = quizData.map(({ correct }) => correct);
     }
 

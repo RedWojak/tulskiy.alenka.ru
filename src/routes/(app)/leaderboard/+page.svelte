@@ -186,7 +186,7 @@
             Ваш результат {score}/{data.questions.length}
           </p>
         {/if}
-        <a class="link" href={RESULT_PAGE}>Посмотреть ответы</a>
+        <a class="link" data-sveltekit-reload href={RESULT_PAGE}>Посмотреть ответы</a>
       </div>
       <div class="winners-info">
         <h2 class="h2">Победители</h2>

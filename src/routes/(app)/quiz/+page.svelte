@@ -26,10 +26,7 @@
   let selectedIdx: number | undefined;
   let waitingResult = false;
 
-  let result: Result =
-    lastResetTime && storedResult && lastResetTime === storedResult.lastResetTime
-      ? storedResult
-      : initResult();
+  let result: Result = lastResetTime && storedResult && lastResetTime === storedResult.lastResetTime ? storedResult : initResult();
   function initResult() {
     const answers: {
       answer: number;
@@ -109,12 +106,7 @@
       {handleAnswerClick}
     />
     <p class="timer-hint">{`До следующего вопроса осталось:`}</p>
-    <Timer
-      countdownSeconds={Math.floor(quiz[currentIdx].duration / 1000)}
-      hideMinutes
-      callback={handleQTimeFinished}
-      bind:restartTimer
-    />
+    <Timer countdownSeconds={Math.floor(quiz[currentIdx].duration / 1000)} hideMinutes callback={handleQTimeFinished} bind:restartTimer />
   {:else if waitingResult}
     <h3 class="h3 quiz-finish-message">
       {@html `Спасибо за участие! </br>Список победителей будет опубликован через несколько секунд.`}
@@ -122,7 +114,7 @@
     <Timer
       countdownSeconds={Math.floor(LEADERS_DATA_LOAD_DELAY / 1000)}
       hideMinutes
-      callback={() => goto(LEADERBOARD_PAGE)}
+      callback={() => goto(LEADERBOARD_PAGE, { invalidateAll: true })}
     />
   {/if}
 </div>

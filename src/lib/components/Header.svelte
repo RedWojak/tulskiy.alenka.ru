@@ -27,6 +27,7 @@
     background-image: url("../images/backIcon.svg");
     background-size: cover;
     background-color: transparent;
+    cursor: pointer;
   }
 </style>
 

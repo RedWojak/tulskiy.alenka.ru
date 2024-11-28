@@ -75,7 +75,7 @@ export interface InitResponse {
 export interface InitData {
   serverTime: number;
   quizLaunchTime: number;
-  lastResetTime: number | null;
+  lastResetTime: number;
 }
 
 export interface LoginResponse {

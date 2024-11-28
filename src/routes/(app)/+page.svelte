@@ -1,18 +1,8 @@
 <script lang="ts">
-  import {
-    getStoredResult,
-    getStoredUser,
-    removeResult,
-    removeUser
-  } from "$lib/helpers/localstorage-utils";
-  import {
-    INIT_DATA_RELOAD_INTERVAL,
-    INIT_DEPENDENCY,
-    LEADERBOARD_PAGE,
-    QUIZ_PAGE
-  } from "$lib/constants";
   import { getQuizStage } from "$lib/helpers/get-quiz-stage";
+  import { getStoredResult, getStoredUser, removeResult, removeUser } from "$lib/helpers/localstorage-utils";
   import { goto, invalidate } from "$app/navigation";
+  import { INIT_DATA_RELOAD_INTERVAL, INIT_DEPENDENCY, LEADERBOARD_PAGE, QUIZ_PAGE } from "$lib/constants";
   import { onDestroy, onMount } from "svelte";
   import { Stages } from "$lib/types";
   import { user as userStore } from "$lib/stores";
@@ -23,83 +13,82 @@
   import MissedQuizMessage from "$lib/components/MissedQuizMessage.svelte";
   import Timer from "$lib/components/Timer.svelte";
   import type { PageData } from "./$types";
-  import type { Stage } from "$lib/types";
+  import type { Stage, User } from "$lib/types";
 
   export let data: PageData;
 
   let intervalId: number;
   let quizStage: Stage = Stages.Pending;
   let restartTimer: (a: number) => void;
-  let serverTime = data.serverTime;
-  let quizLaunchTime = data.quizLaunchTime;
-  let lastResetTime = data.lastResetTime;
-  $: if (data) {
-    updateInitData(data);
-    updateUser(data);
-  }
-  $: msTillStart = quizLaunchTime > 0 ? quizLaunchTime - serverTime : undefined;
-  $: user = $userStore;
-  $: countdownSeconds = msTillStart ? Math.floor(msTillStart / 1000) : undefined;
-  $: if (quizLaunchTime < 0) quizStage = Stages.Standby;
-  $: if (msTillStart && quizLaunchTime > 0)
-    quizStage = getQuizStage(msTillStart, data.quizDuration);
-  $: if (quizStage === Stages.Running && user) goto(QUIZ_PAGE);
-  $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE);
-  $: if (lastResetTime) {
-    const result = getStoredResult();
-    if (lastResetTime !== result?.lastResetTime) removeResult();
-  }
-  function updateInitData(data?: PageData) {
-    if (data) {
-      lastResetTime = data.lastResetTime;
-      serverTime = data.serverTime;
-      quizLaunchTime = data.quizLaunchTime;
+  let prevData = data;
+  let countdownSeconds: number | undefined = undefined;
+  let user: User | undefined = undefined;
 
-      if (
-        quizLaunchTime &&
-        serverTime &&
-        (data.quizLaunchTime !== quizLaunchTime || lastResetTime !== data.lastResetTime)
-      ) {
-        restartTimer && restartTimer(Math.floor(quizLaunchTime - serverTime / 1000));
-      }
-    }
-  }
-  function updateUser(data?: PageData) {
-    if (!user) {
-      const storedUser = getStoredUser();
-      if (!storedUser) return;
+  const result = getStoredResult();
+  if (result && (data.lastResetTime !== result.lastResetTime || data.quizLaunchTime < 0)) removeResult();
 
-      if (
-        (data && quizLaunchTime < 0) ||
-        (data?.lastResetTime && storedUser.lastResetTime !== data.lastResetTime)
-      ) {
-        removeUser();
-      } else {
-        userStore.set(storedUser);
-      }
+  function restoreUser(data: PageData) {
+    const storedUser = getStoredUser();
+    if (!storedUser) return;
+    if (storedUser.lastResetTime !== data.lastResetTime || data.quizLaunchTime < 0) {
+      removeUser();
     } else {
-      if (
-        (data?.lastResetTime && user.lastResetTime !== data.lastResetTime) ||
-        (data && quizLaunchTime < 0)
-      ) {
-        removeUser();
-        userStore.set(undefined);
-      }
+      userStore.set(storedUser);
+      user = storedUser;
     }
   }
 
-  async function checkInitData() {
+  function resetData() {
+    quizStage = Stages.Pending;
+    countdownSeconds = undefined;
+    const result = getStoredResult();
+    if (result) removeResult();
+    const storedUser = getStoredUser();
+    if (storedUser) removeUser();
+    userStore.set(undefined);
+  }
+
+  function updateInitData(data: PageData) {
+    if (data.lastResetTime !== prevData.lastResetTime) {
+      resetData();
+    }
+    if (data.quizLaunchTime <= 0) quizStage = Stages.Standby;
+    else {
+      const msTillStart = data.quizLaunchTime - data.serverTime;
+      quizStage = getQuizStage(msTillStart, data.quizDuration);
+      if (user) {
+        if (countdownSeconds === undefined) {
+          countdownSeconds = msTillStart ? Math.floor(msTillStart / 1000) : undefined;
+        } else if (data.quizLaunchTime !== prevData.quizLaunchTime && restartTimer) {
+          restartTimer(Math.floor(msTillStart / 1000));
+        }
+      }
+    }
+    prevData = data;
+  }
+
+  function checkInitData() {
     if (intervalId && (quizStage === Stages.Finished || quizStage === Stages.Running)) {
       clearInterval(intervalId);
       return;
     }
     invalidate(INIT_DEPENDENCY);
   }
+
   function startChecking() {
     intervalId = setInterval(checkInitData, INIT_DATA_RELOAD_INTERVAL);
   }
 
-  updateUser(data);
+  restoreUser(data);
+
+  $: if (data) {
+    updateInitData(data);
+  }
+
+  $: user = $userStore;
+  $: if (quizStage === Stages.Running && user) goto(QUIZ_PAGE);
+  $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE);
+
   onMount(async () => {
     startChecking();
   });
@@ -126,18 +115,16 @@
 </style>
 
 <div class="wrapper" class:reverse={user === undefined && quizStage === Stages.Standby}>
-  {#if quizStage !== Stages.Pending}
-    <img
-      class="banner"
-      src={user === undefined && quizStage === Stages.Standby ? bannerBottom : bannerTop}
-      alt="Quiz banner"
-    />
+  {#if quizStage !== Stages.Pending && quizStage !== Stages.Finished}
+    <img class="banner" src={user === undefined && quizStage === Stages.Standby ? bannerBottom : bannerTop} alt="Quiz banner" />
 
-    {#if user === undefined && quizStage !== Stages.Standby}
+    {#if user === undefined && quizStage === Stages.Running}
       <MissedQuizMessage />
-    {:else if user === undefined}
-      <Login {lastResetTime} />
-    {:else if user !== undefined && quizStage === Stages.Standby && countdownSeconds !== undefined}
+    {/if}
+    {#if user === undefined && quizStage === Stages.Standby}
+      <Login lastResetTime={data.lastResetTime} />
+    {/if}
+    {#if user !== undefined && quizStage === Stages.Standby && countdownSeconds !== undefined}
       <Greeting userName={user.name} />
       <Timer {countdownSeconds} callback={() => (quizStage = Stages.Running)} bind:restartTimer />
     {/if}

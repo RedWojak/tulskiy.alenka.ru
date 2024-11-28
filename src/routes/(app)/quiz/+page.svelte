@@ -22,6 +22,7 @@
   let quiz: QuizModel = [];
   let quizStage: Stage = Stages.Pending;
   let restartTimer: (a: number) => void;
+  let resultCountdown = Math.floor(LEADERS_DATA_LOAD_DELAY / 1000);
 
   let selectedIdx: number | undefined;
   let waitingResult = false;
@@ -71,6 +72,7 @@
       console.error(e);
     }
   }
+
   $: if (data.quizLaunchTime < 0) quizStage = Stages.Standby;
   $: if (msTillStart) quizStage = getQuizStage(msTillStart, data.quizDuration);
   $: if (quizStage === Stages.Finished) goto(LEADERBOARD_PAGE, { invalidateAll: true });
@@ -82,6 +84,9 @@
     theme.toggleAltTheme();
   } else {
     theme.toggleMainTheme();
+  }
+  $: if (currentIdx === -1 && msTillStart) {
+    waitingResult = true;
   }
 </script>
 
@@ -97,7 +102,7 @@
 </style>
 
 <div class="container">
-  {#if currentIdx !== undefined && quiz.length > 0 && quizStage === Stages.Running && userData && !waitingResult}
+  {#if currentIdx !== undefined && currentIdx !== -1 && quiz.length > 0 && quizStage === Stages.Running && userData && !waitingResult}
     <QuestionView
       questionNumber={`${currentIdx + 1} / ${quiz.length}`}
       question={quiz[currentIdx].question}
@@ -111,10 +116,6 @@
     <h3 class="h3 quiz-finish-message">
       {@html `Спасибо за участие! </br>Список победителей будет опубликован через несколько секунд.`}
     </h3>
-    <Timer
-      countdownSeconds={Math.floor(LEADERS_DATA_LOAD_DELAY / 1000)}
-      hideMinutes
-      callback={() => goto(LEADERBOARD_PAGE, { invalidateAll: true })}
-    />
+    <Timer countdownSeconds={resultCountdown} hideMinutes callback={() => goto(LEADERBOARD_PAGE, { invalidateAll: true })} />
   {/if}
 </div>

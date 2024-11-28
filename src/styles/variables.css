@@ -29,12 +29,13 @@
   --spacing-extra-large: 24px;
   --spacing-huge: 28px;
 
-  --font-size-m: 14px;
+  --font-size-sm: 14px;
+  --font-size-m: 16px;
 	--font-size-lg: 18px;
 	--font-size-xl: 24px;
 	--font-size-xxl: 32px;
   --font-size-xxxl: 60px;
 
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-sm);
 }
 

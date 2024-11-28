@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    getCountryCallingCode,
-    parsePhoneNumber,
-    validatePhoneNumberLength
-  } from "libphonenumber-js";
+  import { getCountryCallingCode, parsePhoneNumber, validatePhoneNumberLength } from "libphonenumber-js";
   import { DEFAULT_COUNTRY } from "$lib/constants";
   import { tick } from "svelte";
   import InputWithErrorIcon from "./InputWithErrorIcon.svelte";
@@ -115,6 +111,7 @@
 
     display: flex;
     justify-content: end;
+    font-size: var(--font-size-m);
     border: 1px solid transparent;
     color: var(--color-dark);
   }

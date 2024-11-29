@@ -98,7 +98,7 @@
 
 <style>
   .phone-field {
-    padding-left: calc(2 * var(--spacing-medium-large));
+    padding-left: calc(2.5 * var(--spacing-medium-large));
   }
 
   .region {
@@ -106,8 +106,7 @@
     top: 0;
     left: 0;
 
-    width: calc(1.7 * var(--spacing-medium-large));
-    padding: var(--spacing-medium) 0;
+    padding: var(--spacing-medium) 0 var(--spacing-medium) var(--spacing-medium-large);
 
     display: flex;
     justify-content: end;
